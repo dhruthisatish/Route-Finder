@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROUTE FINDER </title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CYBERPUNK THEME CSS --- */
+        :root {
+            --neon-pink: #ff007f;
+            --neon-cyan: #00f7ff;
+            --neon-purple: #bc13fe;
+            --dark-bg: #090909;
+            --card-bg: #121212;
+        }
+
+        body { 
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--dark-bg);
+            /* Subtle digital grid pattern overlay */
+            background-image: linear-gradient(rgba(0, 247, 255, 0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 247, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            color: #e0e0e0;
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 550px; 
+            padding: 3rem; 
+            border-radius: 30px;
+            /* Glowing border and shadow */
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4), inset 0 0 20px rgba(0, 247, 255, 0.1);
+            position: relative;
+        }
+
+        h1 { 
+            font-family: 'Fredoka One', cursive;
+            color: var(--neon-pink); 
+            text-align: center; 
+            font-size: 3.5rem; /* Big font retained */
+            margin: 0 0 10px 0;
+            line-height: 1.1;
+            text-transform: uppercase;
+            /* Neon glow effect */
+            text-shadow: 0 0 10px var(--neon-pink), 2px 2px 0px var(--neon-purple);
+        }
+
+        p.intro {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 0 0 5px rgba(0, 247, 255, 0.5);
+        }
+
+        label { 
+            display: block; 
+            margin-top: 15px; 
+            font-weight: 800; 
+            color: var(--neon-cyan); 
+            font-size: 1.1rem;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 1px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 5px; 
+            border: 2px solid #333; 
+            border-radius: 15px; 
+            transition: 0.3s; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+            background: #000; /* Dark input background */
+            color: var(--neon-cyan);
+            font-family: 'Nunito', sans-serif;
+        }
+
+        input:focus { 
+            border-color: var(--neon-pink); 
+            outline: none; 
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+        }
+
+        input::placeholder {
+            color: #555;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            /* Gradient neon button */
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+            color: white; 
+            border: none; 
+            margin-top: 30px; 
+            font-size: 1.5rem; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-family: 'Fredoka One', cursive;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 0 30px rgba(188, 19, 254, 0.8);
+            background: linear-gradient(45deg, #ff3399, #cf5eff);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        button:disabled { 
+            background: #333; 
+            color: #777;
+            box-shadow: none; 
+            transform: none; 
+        }
+
+        #result { 
+            margin-top: 30px; 
+            padding: 25px; 
+            background: #0f0f1a; 
+            border: 2px dashed var(--neon-purple);
+            border-radius: 20px; 
+            color: #e0e0e0; 
+            display: none;
+            box-shadow: inset 0 0 20px rgba(188, 19, 254, 0.2);
+        }
+
+        .result-title {
+            font-family: 'Fredoka One', cursive;
+            color: var(--neon-cyan);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            letter-spacing: 1px;
+        }
+
+        .route-step { 
+            font-weight: bold; 
+            color: #fff; 
+            margin-bottom: 10px; 
+            font-size: 1.1rem;
+            padding: 12px;
+            background: #1a1a2e;
+            border: 1px solid var(--neon-purple);
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(188, 19, 254, 0.3);
+        }
+
+        .error { 
+            color: #ff073a; /* Neon Red */
+            text-align: center; 
+            margin-top: 15px; 
+            font-weight: bold; 
+            text-shadow: 0 0 8px rgba(255, 7, 58, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>TRAVEL OPTIMISER</h1>
+    
+    <p class="intro">
+        Having trouble deciding which place to go first on your trip?
+        Enter the names of the 4 cities you want to visit and we'll give you the best path.
+    </p>
+    
+    <label>Place 1</label>
+    <input type="text" id="loc0" placeholder="">
+    
+    <label>Place 2</label>
+    <input type="text" id="loc1" placeholder="">
+    
+    <label>Place 3</label>
+    <input type="text" id="loc2" placeholder="">
+    
+    <label>Place 4</label>
+    <input type="text" id="loc3" placeholder="">
+
+    <button onclick="findShortestPath()" id="btn">Let's Go! ✈️</button>
+    
+    <div id="error" class="error"></div>
+    <div id="result"></div>
+</div>
+
+<script>
+    // --- ALGORITHM & LOGIC (Exactly the same as before) ---
+
+    function getPermutations(arr) {
+        if (arr.length === 0) return [[]];
+        const firstEl = arr[0];
+        const rest = arr.slice(1);
+        const permsWithoutFirst = getPermutations(rest);
+        const allPermutations = [];
+        permsWithoutFirst.forEach((perm) => {
+            for (let i = 0; i <= perm.length; i++) {
+                const permWithFirst = [...perm.slice(0, i), firstEl, ...perm.slice(i)];
+                allPermutations.push(permWithFirst);
+            }
+        });
+        return allPermutations;
+    }
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    async function getCoordinates(address) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                return { 
+                    lat: parseFloat(data[0].lat), 
+                    lon: parseFloat(data[0].lon), 
+                    name: address 
+                };
+            }
+            throw new Error(`not found`);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    async function findShortestPath() {
+        const btn = document.getElementById('btn');
+        const errDiv = document.getElementById('error');
+        const resDiv = document.getElementById('result');
+        
+        btn.disabled = true;
+        btn.innerText = "Thinking... 🤔";
+        errDiv.innerText = "";
+        resDiv.style.display = "none";
+
+        const inputs = [
+            document.getElementById('loc0').value,
+            document.getElementById('loc1').value,
+            document.getElementById('loc2').value,
+            document.getElementById('loc3').value
+        ];
+
+        if (inputs.some(i => i.trim() === "")) {
+            errDiv.innerText = "Please fill in all 4 places!";
+            btn.disabled = false;
+            btn.innerText = "Let's Go! ✈️";
+            return;
+        }
+
+        const coords = [];
+        for (let i = 0; i < inputs.length; i++) {
+            const result = await getCoordinates(inputs[i]);
+            if (!result) {
+                errDiv.innerText = `Oops! We couldn't find: "${inputs[i]}"`;
+                btn.disabled = false;
+                btn.innerText = "Let's Go! ✈️";
+                return;
+            }
+            coords.push(result);
+        }
+
+        const matrix = [];
+        for (let i = 0; i < 4; i++) {
+            matrix[i] = [];
+            for (let j = 0; j < 4; j++) {
+                if (i === j) matrix[i][j] = 0;
+                else matrix[i][j] = getDistance(coords[i].lat, coords[i].lon, coords[j].lat, coords[j].lon);
+            }
+        }
+
+        const indices = [0, 1, 2, 3];
+        const allRoutes = getPermutations(indices);
+        
+        let minDistance = Infinity;
+        let bestRoute = [];
+
+        allRoutes.forEach(route => {
+            let currentDist = 0;
+            for (let i = 0; i < route.length - 1; i++) {
+                const start = route[i];
+                const end = route[i+1];
+                currentDist += matrix[start][end];
+            }
+            if (currentDist < minDistance) {
+                minDistance = currentDist;
+                bestRoute = route;
+            }
+        });
+
+        // --- UPDATED RESULT TEXT (Retained from previous request) ---
+        let html = `<span class="result-title">CALCULATED BEST ROUTE, HAVE A SAFE JOURNEY!</span>`;
+        html += `<div style="text-align:center; margin-bottom:15px; color: #ccc;">Total Trip: ${minDistance.toFixed(2)} km</div>`;
+        
+        bestRoute.forEach((index, step) => {
+            let icon = "📍";
+            if(step === 0) icon = "🏁 Start:";
+            else if(step === 3) icon = "🏁 End:";
+            else icon = "⬇️ Then:";
+
+            html += `<div class="route-step">${icon} ${coords[index].name}</div>`;
+        });
+
+        resDiv.innerHTML = html;
+        resDiv.style.display = "block";
+        btn.disabled = false;
+        btn.innerText = "Let's Go! ✈️";
+    }
+</script>
+
+</body>
+</html>
